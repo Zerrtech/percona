@@ -58,17 +58,14 @@ _datadir() {
 	"$@" --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }'
 }
 
-set +e
-set -x
 if [ "$(id -u)" = '0' ]; then
-	cat <<-THE_END > /root/.my.cnf
+	cat <<-THE_END > $HOME/.my.cnf
 	[client]
 	user=root
 	password=$MYSQL_ROOT_PASSWORD
 THE_END
+	chmod 0600 /root/.my.cnf
 fi
-set +x
-set -e
 
 # allow the container to be started with `--user`
 if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
@@ -185,7 +182,5 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		echo
 	fi
 fi
-
-chmod 0600 /root/.my.cnf
 
 exec "$@"
