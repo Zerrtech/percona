@@ -58,6 +58,8 @@ _datadir() {
 	"$@" --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }'
 }
 
+set +e
+set -x
 if [ "$(id -u)" = '0' ]; then
 	cat <<-THE_END > /root/.my.cnf
 	[client]
@@ -65,6 +67,8 @@ if [ "$(id -u)" = '0' ]; then
 	password=$MYSQL_ROOT_PASSWORD
 THE_END
 fi
+set +x
+set -e
 
 # allow the container to be started with `--user`
 if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
