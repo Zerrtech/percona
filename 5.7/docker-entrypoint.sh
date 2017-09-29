@@ -64,6 +64,13 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
 	DATADIR="$(_datadir "$@")"
 	mkdir -p "$DATADIR"
 	chown -R mysql:mysql "$DATADIR"
+
+	cat <<-THE_END > /root/.my.cnf
+	[client]
+	user=root
+	password=$MYSQL_ROOT_PASSWORD
+THE_END
+	
 	exec gosu mysql "$BASH_SOURCE" "$@"
 fi
 
@@ -173,12 +180,6 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 		echo
 	fi
 fi
-
-cat <<THE_END > /root/.my.cnf
-[client]
-user=root
-password=$MYSQL_ROOT_PASSWORD
-THE_END
 
 chmod 0600 /root/.my.cnf
 
