@@ -174,4 +174,12 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 	fi
 fi
 
+cat <<THE_END > /root/.my.cnf
+[client]
+user=root
+password=$MYSQL_ROOT_PASSWORD
+THE_END
+
+chmod 0600 /root/.my.cnf
+
 exec "$@"
