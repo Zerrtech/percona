@@ -58,19 +58,20 @@ _datadir() {
 	"$@" --verbose --help 2>/dev/null | awk '$1 == "datadir" { print $2; exit }'
 }
 
+if [ "$(id -u)" = '0' ]; then
+	cat <<-THE_END > /root/.my.cnf
+	[client]
+	user=root
+	password=$MYSQL_ROOT_PASSWORD
+THE_END
+fi
+
 # allow the container to be started with `--user`
 if [ "$1" = 'mysqld' -a -z "$wantHelp" -a "$(id -u)" = '0' ]; then
 	_check_config "$@"
 	DATADIR="$(_datadir "$@")"
 	mkdir -p "$DATADIR"
 	chown -R mysql:mysql "$DATADIR"
-
-	cat <<-THE_END > /root/.my.cnf
-	[client]
-	user=root
-	password=$MYSQL_ROOT_PASSWORD
-THE_END
-	
 	exec gosu mysql "$BASH_SOURCE" "$@"
 fi
 
